@@ -7,7 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             git \
             gettext \
             luajit \
+            mc \
             ninja-build \
+            tmux \
             unzip \
             wget \
             zsh \
