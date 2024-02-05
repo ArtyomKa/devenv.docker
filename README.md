@@ -4,5 +4,6 @@ The purpose of the container is to create a base for deve containers having
 neovim installed.
 
 ## TODO
-- [ ] NvChad config
+- [x] NvChad config
 - [x] Python
+- [ ] Tmux config
