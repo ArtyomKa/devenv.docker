@@ -31,12 +31,18 @@ RUN touch test.txt
 RUN sh -c "$(wget --show-progress --progress=dot:mega -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
 
 WORKDIR /root
+#echo install zsh plugin manager
 RUN git clone --recurse-submodules https://github.com/ArtyomKa/dotfiles.git
 
 WORKDIR /root/dotfiles
 
-RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 && rm /root/.bashrc /root/.zshrc && stow . && nvim +silent +qall
-# RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 && rm /root/.bashrc /root/.zshrc -rf /root/.oh-my-zsh/custom && stow . && nvim +silent +qall
+# RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 && rm /root/.bashrc /root/.zshrc && stow . && nvim +silent +qall
+RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 \
+    && rm /root/.bashrc \
+          /root/.zshrc \
+          /root/.oh-my-zsh/custom/example.zsh \
+          /root/.oh-my-zsh/custom/themes/example.zsh-theme \
+    && stow . && nvim +silent +qall
 WORKDIR /root
-# CMD ["/bin/zsh"]
-CMD ["/bin/bash"]
+CMD ["/bin/zsh"]
+# CMD ["/bin/bash"]
