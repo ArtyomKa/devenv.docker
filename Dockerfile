@@ -43,6 +43,12 @@ RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 \
           /root/.oh-my-zsh/custom/example.zsh \
           /root/.oh-my-zsh/custom/themes/example.zsh-theme \
     && stow . && nvim +silent +qall
+
+WORKDIR /tmp
+RUN tar czf home.tar.gz /root/
+WORKDIR /etc/skel
+RUN tar xvf /tmp/home.tar.gz --strip-components=1 && rm /tmp/home.tar.gz
+
 WORKDIR /root
 CMD ["/bin/zsh"]
 # CMD ["/bin/bash"]
