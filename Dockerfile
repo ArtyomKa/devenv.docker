@@ -1,6 +1,7 @@
 FROM debian:bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
             build-essential \
+            bat \
             cmake \
             curl \
             ca-certificates \
@@ -23,31 +24,39 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/*
 WORKDIR /temp
+
+
+#install neovim
 RUN wget --show-progress --progress=dot:mega  https://github.com/neovim/neovim/archive/refs/tags/v0.9.5.tar.gz -O neovim-0.9.5.tar.gz && \
     tar xvf neovim-0.9.5.tar.gz && \
-    git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 && rm -rf ~/.config/nvim/.git && \
+    cd /temp/neovim-0.9.5 && \
+    make -j && make install && rm -rf /temp/neovim-0.9.5
+
+#install tpm, oh-my-zsh
+RUN git clone --depth 1 https://github.com/NvChad/NvChad ~/.config/nvim && \
+    # rm -rf ~/.config/nvim/.git && \
     wget --show-progress --progress=dot:mega  https://github.com/tmux-plugins/tpm/archive/refs/tags/v3.1.0.tar.gz -O tpm-v3.1.0.tar.gz && \
     tar xvf tpm-v3.1.0.tar.gz && \
     mkdir -p /root/.tmux/plugins && \
     mv tpm-3.1.0 tpm && \
     mv tpm /root/.tmux/plugins && \
+    sh -c "$(wget --show-progress --progress=dot:mega -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"  && \
     rm *.tar.gz
 
     
-WORKDIR /temp/neovim-0.9.5
-RUN make -j && make install && rm -rf /temp/*
 
-RUN touch test.txt
-RUN sh -c "$(wget --show-progress --progress=dot:mega -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
 
 WORKDIR /root
 #echo install zsh plugin manager
 RUN git clone --recurse-submodules https://github.com/ArtyomKa/dotfiles.git
 
+#install fzf
+RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
+    ~/.fzf/install --xdg --no-fish --no-bash --no-update-rc --key-bindings --completion && \
+    mv ~/.config/fzf/fzf.zsh  ~/dotfiles/.oh-my-zsh/custom/
+
 WORKDIR /root/dotfiles
 
-# RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 && rm /root/.bashrc /root/.zshrc && stow . && nvim +silent +qall
-# RUN git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 \
 RUN rm /root/.bashrc \
           /root/.zshrc \
           /root/.oh-my-zsh/custom/example.zsh \
